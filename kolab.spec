@@ -25,7 +25,7 @@ Summary:	Kolab Groupware Server
 Name:		kolab
 License:	GPL
 Version:	2.1.0
-Release:	%mkrel 1
+Release:	%mkrel 2
 Group:		System/Servers
 URL:		http://www.kolab.org
 Source0:	kolabd-%{version}.tar.bz2
@@ -41,6 +41,8 @@ Patch5:		kolabd-sysv.diff
 Patch6:		kolabd-slapd_template.diff
 Patch7:		kolabd-ldap_dir_chown.diff
 Patch8:		kolabd-amavisd_template.diff
+Patch9:		kolabd-cyrus-imapd_template.diff
+Patch10:	kolabd-proftpd_template.diff
 Requires(post):	rpm-helper
 Requires(preun): rpm-helper
 Requires(pre):	rpm-helper
@@ -85,7 +87,8 @@ Requires:	php-pear-Net_LMTP
 Requires:	php-xml >= 5.2.2
 Requires:	postfix >= 2.2.5
 Requires:	postfix-ldap >= 2.2.5
-Requires:	proftpd >= 1.2.10
+Requires:	proftpd >= 1.3.0
+Requires:	proftpd-mod_ldap >= 1.3.0
 Requires:	spamassassin-spamc >= 3.1.8
 Requires:	spamassassin-spamd >= 3.1.8
 Provides:	kolab-server
@@ -114,6 +117,8 @@ addressbook and nice web gui for administration.
 %patch6 -p0
 %patch7 -p0
 %patch8 -p0
+%patch9 -p1
+%patch10 -p0
 
 cp %{SOURCE1} dist_conf/mandriva
 cp %{SOURCE2} kolab.init
