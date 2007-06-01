@@ -25,7 +25,7 @@ Summary:	Kolab Groupware Server
 Name:		kolab
 License:	GPL
 Version:	2.1.0
-Release:	%mkrel 2
+Release:	%mkrel 3
 Group:		System/Servers
 URL:		http://www.kolab.org
 Source0:	kolabd-%{version}.tar.bz2
@@ -43,6 +43,11 @@ Patch7:		kolabd-ldap_dir_chown.diff
 Patch8:		kolabd-amavisd_template.diff
 Patch9:		kolabd-cyrus-imapd_template.diff
 Patch10:	kolabd-proftpd_template.diff
+Patch11:	kolabd-postfix_template.diff
+Patch12:	kolabd-main_template.diff
+Patch13:	kolabd-smtpd_template.diff
+Patch14:	kolabd-transport_template.diff
+Patch15:	kolabd-virtual_template.diff
 Requires(post):	rpm-helper
 Requires(preun): rpm-helper
 Requires(pre):	rpm-helper
@@ -51,7 +56,7 @@ Requires(pre):	amavisd-new >= 2.4.5
 Requires(pre):	apache-conf >= 2.2.4
 Requires(pre):	apache-mod_php
 Requires(pre):	apache-mpm-prefork >= 2.2.4
-Requires(pre):	clamd >= 0.90.2
+Requires(pre):	clamd >= 0.90.3
 Requires(pre):	cyrus-imapd >= 2.2.12
 Requires(pre):	openldap-servers
 Requires(pre):	postfix >= 2.2.5
@@ -62,7 +67,7 @@ Requires:	apache-mod_ldap >= 2.2.4
 Requires:	apache-mod_php
 Requires:	apache-mod_ssl >= 2.2.4
 Requires:	apache-mpm-prefork >= 2.2.4
-Requires:	clamd >= 0.90.2
+Requires:	clamd >= 0.90.3
 Requires:	cyrus-imapd >= 2.2.12
 Requires:	cyrus-imapd-utils >= 2.2.12
 Requires:	cyrus-sasl
@@ -119,6 +124,11 @@ addressbook and nice web gui for administration.
 %patch8 -p0
 %patch9 -p1
 %patch10 -p0
+%patch11 -p0
+%patch12 -p0
+%patch13 -p0
+%patch14 -p0
+%patch15 -p0
 
 cp %{SOURCE1} dist_conf/mandriva
 cp %{SOURCE2} kolab.init
@@ -236,6 +246,63 @@ If you upgraded from a previous version simply refresh Kolab by running run '%{_
 In every case execute '%{_initrddir}/kolab restart' as user root.
 EOF
 
+
+
+pushd %{buildroot}%{_sysconfdir}/kolab/templates
+# fix ownership of the generated templates
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:ldap|g" DB_CONFIG.slapd.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:ldap|g" ldap.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:ldap|g" slapd.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:ldap|g" slapd.access.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:ldap|g" slapd.replicas.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" ldapdistlist.cf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" ldaptransport.cf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" ldapvirtual.cf.template
+# amavisd complains if its config file is owned by other than root
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:amavis|g" amavisd.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=clamav:clamav|g" clamd.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=clamav:clamav|g" freshclam.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" cyrus.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" fbview.conf.template
+# apache needs to read this file
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:%{l_musr}|g" freebusy.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" httpd.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" httpd.local.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" imapd.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" imapd.group.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" ldapdistlist.cf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" ldaptransport.cf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" ldapvirtual.cf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" main.cf.template
+# master.cf has a password
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:postfix|g" master.cf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" php.ini.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" proftpd.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" rc.conf.template
+# postfix and apache need access to this file
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:%{l_musr}|g" resmgr.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" saslauthd.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" session_vars.php.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" smtpd.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" transport.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" virtual.template
+# fix file attributes
+perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0644|g" session_vars.php.template
+perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0644|g" imapd.conf.template
+perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0644|g" imapd.group.template
+perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0640|g" master.cf.template
+perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0640|g" amavisd.conf.template
+# virtual has no password or any other secret that I can see, so let it be 0644
+perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0644|g" virtual.template
+perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0640|g" resmgr.conf.template
+perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0640|g" proftpd.conf.template
+perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0644|g" cyrus.conf.template
+perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0644|g" saslauthd.conf.template
+perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0644|g" fbview.conf.template
+perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0640|g" freebusy.conf.template
+perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0644|g" resmgr.conf.template
+popd
+
 %pre
 #if getent group %{l_musr} >/dev/null 2>&1 ; then : ; else \
 #    /usr/sbin/groupadd -g %{l_mgid} %{l_musr} > /dev/null 2>&1 || exit 1 ; fi
@@ -308,7 +375,7 @@ rm -rf %{buildroot}
 %attr(0755,root,root) %{_datadir}/kolab/showuser
 %attr(0755,root,root) %{_datadir}/kolab/start
 %attr(0755,root,root) %{_datadir}/kolab/stop
-%dir %{_datadir}/kolab/scripts
+%dir %attr(0755,%{l_musr},%{l_mgrp}) %{_datadir}/kolab/scripts
 %attr(0755,root,root) %{_datadir}/kolab/scripts/kolab
 %attr(0755,root,root) %{_datadir}/kolab/scripts/kolab_bootstrap
 %attr(0755,root,root) %{_datadir}/kolab/scripts/kolab_ca.sh
