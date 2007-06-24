@@ -152,7 +152,7 @@ rm -f namespace/libexec/start
 rm -f namespace/libexec/stop
 
 %build
-automake
+autoconf; automake
 %configure2_5x \
     --with-dist=mandriva
 
