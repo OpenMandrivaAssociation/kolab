@@ -25,7 +25,7 @@ Summary:	Kolab Groupware Server
 Name:		kolab
 License:	GPL
 Version:	2.1.0
-Release:	%mkrel 4
+Release:	%mkrel 5
 Group:		System/Servers
 URL:		http://www.kolab.org
 Source0:	kolabd-%{version}.tar.bz2
@@ -48,6 +48,7 @@ Patch12:	kolabd-main_template.diff
 Patch13:	kolabd-smtpd_template.diff
 Patch14:	kolabd-transport_template.diff
 Patch15:	kolabd-virtual_template.diff
+Patch16:	kolabd-imapd_template_loginfix.diff
 Requires(post):	rpm-helper
 Requires(preun): rpm-helper
 Requires(pre):	rpm-helper
@@ -55,7 +56,7 @@ Requires(postun): rpm-helper
 Requires(pre):	amavisd-new >= 2.4.5
 Requires(pre):	apache-conf >= 2.2.4
 Requires(pre):	apache-mod_php
-Requires(pre):	apache-mpm >= 2.2.4
+Requires(pre):	apache-mpm-prefork >= 2.2.4
 Requires(pre):	clamd >= 0.90.3
 Requires(pre):	cyrus-imapd >= 2.2.12
 Requires(pre):	openldap-servers
@@ -66,7 +67,7 @@ Requires:	apache-mod_dav >= 2.2.4
 Requires:	apache-mod_ldap >= 2.2.4
 Requires:	apache-mod_php
 Requires:	apache-mod_ssl >= 2.2.4
-Requires:	apache-mpm >= 2.2.4
+Requires:	apache-mpm-prefork >= 2.2.4
 Requires:	clamd >= 0.90.3
 Requires:	cyrus-imapd >= 2.2.12
 Requires:	cyrus-imapd-utils >= 2.2.12
@@ -129,6 +130,7 @@ addressbook and nice web gui for administration.
 %patch13 -p0
 %patch14 -p0
 %patch15 -p0
+%patch16 -p0
 
 cp %{SOURCE1} dist_conf/mandriva
 cp %{SOURCE2} kolab.init
@@ -152,7 +154,8 @@ rm -f namespace/libexec/start
 rm -f namespace/libexec/stop
 
 %build
-aclocal; autoconf; automake
+aclocal; automake --add-missing --copy; autoconf
+
 %configure2_5x \
     --with-dist=mandriva
 
