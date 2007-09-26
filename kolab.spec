@@ -25,7 +25,7 @@ Summary:	Kolab Groupware Server
 Name:		kolab
 License:	GPL
 Version:	2.1.0
-Release:	%mkrel 6
+Release:	%mkrel 7
 Group:		System/Servers
 URL:		http://www.kolab.org
 Source0:	kolabd-%{version}.tar.bz2
@@ -44,7 +44,6 @@ Patch8:		kolabd-amavisd_template.diff
 Patch9:		kolabd-cyrus-imapd_template.diff
 Patch10:	kolabd-proftpd_template.diff
 Patch11:	kolabd-postfix_template.diff
-Patch12:	kolabd-main_template.diff
 Patch13:	kolabd-smtpd_template.diff
 Patch14:	kolabd-transport_template.diff
 Patch15:	kolabd-virtual_template.diff
@@ -126,7 +125,6 @@ addressbook and nice web gui for administration.
 %patch9 -p1
 %patch10 -p0
 %patch11 -p0
-%patch12 -p0
 %patch13 -p0
 %patch14 -p0
 %patch15 -p0
