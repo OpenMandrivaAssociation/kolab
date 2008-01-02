@@ -98,6 +98,7 @@ Requires:	spamassassin-spamc >= 3.1.8
 Requires:	spamassassin-spamd >= 3.1.8
 Provides:	kolab-server
 Obsoletes:	kolab-server
+BuildRoot:	%{_tmppath}/%{name}-%{version}-root
 
 %description
 Kolab is the KDE Groupware Server that provides full groupware features to
