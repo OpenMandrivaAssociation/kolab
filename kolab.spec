@@ -180,8 +180,8 @@ install -d %{buildroot}%{_sbindir}
 install -d %{buildroot}%{_var}/log/kolab
 install -d %{buildroot}%{_var}/run/kolab
 install -d %{buildroot}%{_var}/spool/kolab
-install -d %{buildroot}%{_localstatedir}/ldap-kolab
-install -d %{buildroot}%{_localstatedir}/kolab
+install -d %{buildroot}%{_localstatedir}/lib/ldap-kolab
+install -d %{buildroot}%{_localstatedir}/lib/kolab
 
 install -m0744 kolab.init %{buildroot}%{_initrddir}/kolab
 install -m0744 kolab_bootstrap.sh %{buildroot}%{_sbindir}/kolab_bootstrap
@@ -309,8 +309,8 @@ popd
 #    /usr/sbin/groupadd -g %{l_mgid} %{l_musr} > /dev/null 2>&1 || exit 1 ; fi
 #if getent passwd %{l_musr} >/dev/null 2>&1 ; then : ; else \
 #    /usr/sbin/useradd -u %{l_muid} -g %{l_mgid} -M -r -s /bin/bash -c "kolab system user" \
-#    -d %{_localstatedir}/kolab %{l_musr} 2> /dev/null || exit 1 ; fi
-%_pre_useradd %{l_musr} %{_localstatedir}/kolab /bin/false
+#    -d %{_localstatedir}/lib/kolab %{l_musr} 2> /dev/null || exit 1 ; fi
+%_pre_useradd %{l_musr} %{_localstatedir}/lib/kolab /bin/false
 
 # put some users in the kolab group
 /usr/bin/gpasswd -a apache %{l_mgrp}
@@ -364,8 +364,8 @@ rm -rf %{buildroot}
 %attr(0755,%{l_musr},%{l_mgrp}) %dir %{_var}/spool/kolab
 %attr(0755,%{l_musr},%{l_mgrp}) %dir %{_var}/run/kolab
 %attr(0775,%{l_musr},%{l_mgrp}) %dir %{_var}/log/kolab
-%attr(0700,ldap,ldap) %dir %{_localstatedir}/ldap-kolab
-%attr(0750,%{l_musr},%{l_mgrp}) %dir %{_localstatedir}/kolab
+%attr(0700,ldap,ldap) %dir %{_localstatedir}/lib/ldap-kolab
+%attr(0750,%{l_musr},%{l_mgrp}) %dir %{_localstatedir}/lib/kolab
 %dir %{_datadir}/kolab
 %attr(0755,root,root) %{_datadir}/kolab/adduser
 %attr(0755,root,root) %{_datadir}/kolab/deluser
