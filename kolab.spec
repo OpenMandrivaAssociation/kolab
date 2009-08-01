@@ -31,7 +31,7 @@ Release:	%mkrel 10
 Group:		System/Servers
 URL:		http://www.kolab.org
 Source0:	kolabd-%{version}.tar.bz2
-Source1:	mandriva
+#Source1:	mandriva
 Source2:	kolab.init
 Source3:	kolab_bootstrap.sh
 Patch0:		kolabd-kolabnamespacedir.diff
@@ -235,6 +235,7 @@ install -m0644 kolab.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/kolab
 
 cat << EOF > README.urpmi
 This is an updated version that works with the current ldap server. Please test it and report problems.
+The calendering function may not be working
 
 To test it, do the following:
 1) /usr/sbin/kolab_bootstrap -b (note the manager password)
