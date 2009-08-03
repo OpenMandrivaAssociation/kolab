@@ -139,7 +139,7 @@ addressbook and nice web gui for administration.
 %patch18 -p0
 %patch19 -p0
 %patch20 -p0
-#cp %{SOURCE1} dist_conf/mandriva
+
 cp %{SOURCE2} kolab.init
 cp %{SOURCE3} kolab_bootstrap.sh
 
