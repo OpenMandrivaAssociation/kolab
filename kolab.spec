@@ -23,13 +23,13 @@
 
 %define _default_patch_fuzz 0
 
-%define subrel 1
+
 
 Summary:	Kolab Groupware Server
 Name:	kolab
 License:	GPL
 Version:	2.1.0
-Release:	%mkrel 9
+Release:	%mkrel 10
 Group:		System/Servers
 URL:		http://www.kolab.org
 Source0:	kolabd-%{version}.tar.bz2
