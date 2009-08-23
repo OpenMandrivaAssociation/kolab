@@ -24,7 +24,6 @@
 %define _default_patch_fuzz 0
 
 
-
 Summary:	Kolab Groupware Server
 Name:	kolab
 License:	GPL
@@ -56,6 +55,7 @@ Patch17:	kolabd-amavisd_template_log.diff
 Patch18:	kolab.globals.diff
 Patch19:	mandriva.diff
 Patch20:	common.diff
+Patch21:	Makefile.diff
 Requires(post):	rpm-helper
 Requires(preun):rpm-helper
 Requires(pre):	rpm-helper
@@ -141,6 +141,7 @@ addressbook and nice web gui for administration.
 %patch18 -p0
 %patch19 -p0
 %patch20 -p0
+%patch21 -p0
 
 cp %{SOURCE2} kolab.init
 cp %{SOURCE3} kolab_bootstrap.sh
