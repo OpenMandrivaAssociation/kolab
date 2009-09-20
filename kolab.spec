@@ -1,10 +1,3 @@
-%define _enable_debug_packages %{nil}
-%define debug_package          %{nil}
-
-# no need to bzip2 patches, the macro below makes the .src.rpm use
-# bzip2 compression instead of gzip (the default one)
-%define _source_payload w9.bzdio
-
 # the Management user/group name/id pair
 %define l_musr kolab
 %define l_mgrp kolab
@@ -21,14 +14,12 @@
 %define l_nusr %{l_musr}
 %define l_ngrp %{l_mgrp}
 
-%define _default_patch_fuzz 0
-
 
 Summary:	Kolab Groupware Server
 Name:	kolab
 License:	GPL
 Version:	2.1.0
-Release:	%mkrel 10
+Release:	%mkrel 11
 Group:		System/Servers
 URL:		http://www.kolab.org
 Source0:	kolabd-%{version}.tar.bz2
