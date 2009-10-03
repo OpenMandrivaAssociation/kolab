@@ -16,14 +16,14 @@
 
 
 Summary:	Kolab Groupware Server
-Name:	kolab
+Name:		kolab
 License:	GPL
 Version:	2.1.0
 Release:	%mkrel 11
 Group:		System/Servers
 URL:		http://www.kolab.org
 Source0:	kolabd-%{version}.tar.bz2
-#Source1:	mandriva
+Source1:	mandriva
 Source2:	kolab.init
 Source3:	kolab_bootstrap.sh
 Patch0:		kolabd-kolabnamespacedir.diff
