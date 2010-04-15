@@ -18,7 +18,7 @@ Summary:	Kolab Groupware Server
 Name:		kolab
 License:	GPL
 Version:	2.2.3
-Release:	%mkrel 1
+Release:	%mkrel 2
 Group:		System/Servers
 URL:		http://www.kolab.org
 Source0:	kolabd-%{version}.tar.gz
@@ -38,7 +38,7 @@ Requires(pre):	amavisd-new >= 2.6.4
 Requires(pre):	apache-conf >= 2.2.14
 Requires(pre):	apache-mod_php
 Requires(pre):	apache-mpm-prefork >= 2.2.14
-Requires(pre):	clamd >= 0.96.0
+Requires(pre):	clamd >= 0.96
 Requires(pre):	cyrus-imapd >= 2.3.15
 Requires(pre):	openldap-servers >= 2.4.19
 Requires(pre):	postfix >= 2.6.5
@@ -74,7 +74,7 @@ Requires:	php-pear-Net_LMTP
 Requires:	php-xml >= 5.3.1
 Requires:	postfix >= 2.2.6
 Requires:	postfix-ldap >= 2.2.6
-Requires:	proftpd >= 1.3.0
+Requires:	proftpd >= 1.3.3
 Requires:	proftpd-mod_ldap >= 1.3.0
 Requires:	spamassassin-spamc >= 3.2.5
 Requires:	spamassassin-spamd >= 3.2.5
