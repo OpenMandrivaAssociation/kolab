@@ -49,7 +49,7 @@ Requires:	apache-mod_ldap >= 2.2.14
 Requires:	apache-mod_php
 Requires:	apache-mod_ssl >= 2.2.14
 Requires:	apache-mpm-prefork >= 2.2.14
-Requires:	clamd >= 0.96.0
+Requires:	clamd >= 0.96
 Requires:	cyrus-imapd >= 2.2.15
 Requires:	cyrus-imapd-utils >= 2.2.15
 Requires:	cyrus-sasl
