@@ -18,7 +18,7 @@ Summary:	Kolab Groupware Server
 Name:		kolab
 License:	GPL
 Version:	2.2.3
-Release:	%mkrel 4
+Release:	%mkrel 5
 Group:		System/Servers
 URL:		http://www.kolab.org
 Source0:	kolabd-%{version}.tar.gz
@@ -204,28 +204,14 @@ EOF
 install -m0644 kolab.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/kolab
 
 cat << EOF > README.urpmi
-This is thr first draft of Kolab-2.2.3. Please test it and report problems.
 
-
-To test it, do the following:
-1) /usr/sbin/kolab_bootstrap -b (note the manager password)
-2) service kolab start
-3) point your browser to https://localhost/kolab/admin and login as
-   user "manager", with the password chosen in step 1.
-4) create/modify/delete users
-5) close all your browser windows, then return back to the web
-administration site, but log in as a regular user you just created, to test
-the forwarding and vacation functions, changing password, etc.
-6) point your mail client smtp and imap servers to localhost, and try to
-send yourself some mail, and read it.
-
-To test the calendaring functions, you'll need the kroupware client, or
-Microsoft Outlook with the Binary connector (proprietary).
+This is a major upgrade from version 2.1.0 to version 2.2.3, the current stable release upstream
 
 For a fresh install please initialize Kolab by running '%{_sbindir}/kolab_bootstrap -b'. as user root.
-An upgrade from the previous verson will not work as we skip several versions. The e-mails should not be deleted. 
-Just re-add the users through the Web interface and then users should see their e-mails.
+An upgrade from the previous verson will not work as we skipped several releases.
+Do a kolab_bootstrap and then just re-add the users through the Web interface and then users should see their e-mails.
 In every case execute '%{_initrddir}/kolab restart' as user root.
+The old e-mails should not be deleted.
 EOF
 
 
