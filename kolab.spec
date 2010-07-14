@@ -14,11 +14,12 @@
 %define l_nusr %{l_musr}
 %define l_ngrp %{l_mgrp}
 
+
 Summary:	Kolab Groupware Server
 Name:		kolab
 License:	GPL
-Version:	2.2.3
-Release:	%mkrel 5
+Version:	2.2.4
+Release:	%mkrel 1
 Group:		System/Servers
 URL:		http://www.kolab.org
 Source0:	kolabd-%{version}.tar.gz
@@ -26,10 +27,10 @@ Source1:	README
 Source2:	kolab.init
 Patch1:		kolabsrv.diff
 Patch2:		rc_config_template.patch
-Patch6:		kolabd-slapd_template.diff
-Patch17:	kolabd-amavisd_template_log.diff
-Patch19:	mandriva.diff
-Patch21:	Makefile.diff
+Patch3:		kolabd-slapd_template.diff
+Patch4:		kolabd-amavisd_template_log.diff
+Patch5:		mandriva.diff
+Patch6:		Makefile.diff
 Requires(post):	rpm-helper
 Requires(preun):rpm-helper
 Requires(pre):	rpm-helper
@@ -38,7 +39,7 @@ Requires(pre):	amavisd-new >= 2.6.4
 Requires(pre):	apache-conf >= 2.2.14
 Requires(pre):	apache-mod_php
 Requires(pre):	apache-mpm-prefork >= 2.2.14
-Requires(pre):	clamd >= 0.96
+Requires(pre):	clamd >= 0.95.3
 Requires(pre):	cyrus-imapd >= 2.3.15
 Requires(pre):	openldap-servers >= 2.4.19
 Requires(pre):	postfix >= 2.6.5
@@ -49,12 +50,12 @@ Requires:	apache-mod_ldap >= 2.2.14
 Requires:	apache-mod_php
 Requires:	apache-mod_ssl >= 2.2.14
 Requires:	apache-mpm-prefork >= 2.2.14
-Requires:	clamd >= 0.96
+Requires:	clamd >= 0.95.0
 Requires:	cyrus-imapd >= 2.2.15
 Requires:	cyrus-imapd-utils >= 2.2.15
 Requires:	cyrus-sasl
 Requires:	horde-kolab-filter
-Requires:	kolab-webadmin >= 2.2.3
+Requires:	kolab-webadmin >= 2.2.4
 Requires:	%{mklibname sasl 2}-plug-login
 Requires:	%{mklibname sasl 2}-plug-plain
 Requires:	openldap-clients
@@ -74,7 +75,7 @@ Requires:	php-pear-Net_LMTP
 Requires:	php-xml >= 5.3.1
 Requires:	postfix >= 2.2.6
 Requires:	postfix-ldap >= 2.2.6
-Requires:	proftpd >= 1.3.3
+Requires:	proftpd >= 1.3.0
 Requires:	proftpd-mod_ldap >= 1.3.0
 Requires:	spamassassin-spamc >= 3.2.5
 Requires:	spamassassin-spamd >= 3.2.5
@@ -103,10 +104,10 @@ addressbook and nice web gui for administration.
 %setup -q -n kolabd-%{version}
 %patch1 -p0
 %patch2 -p0
+%patch3 -p0
+%patch4 -p0
+%patch5 -p0
 %patch6 -p0
-%patch17 -p0
-%patch19 -p0
-%patch21 -p0
 
 cp %{SOURCE2} kolab.init
 cp %{SOURCE1} README
@@ -116,6 +117,18 @@ cp %{SOURCE1} README
 for i in `find . -type d -name CVS`  `find . -type d -name .svn` `find . -type f -name .cvs\*` `find . -type f -name .#\*`; do
     if [ -e "$i" ]; then rm -rf $i; fi >&/dev/null
 done
+
+# strip away annoying ^M
+#find . -type f|xargs file|grep 'CRLF'|cut -d: -f1|xargs perl -p -i -e 's/\r//'
+#find . -type f|xargs file|grep 'text'|cut -d: -f1|xargs perl -p -i -e 's/\r//'
+
+# fix perl_vendordir
+# perl -pi -e "s|perl_vendorlib|%{perl_vendorlib}|g" dist_conf/mandriva
+
+# force regeneration
+# rm -f kolabcheckperm
+# rm -f namespace/libexec/start
+# rm -f namespace/libexec/stop
 
 
 %build
@@ -204,14 +217,27 @@ EOF
 install -m0644 kolab.logrotate %{buildroot}%{_sysconfdir}/logrotate.d/kolab
 
 cat << EOF > README.urpmi
+This is an updated version that works with the current ldap server. Please test it and report problems.
+The calendering function may not be working
 
-This is a major upgrade from version 2.1.0 to version 2.2.3, the current stable release upstream
+To test it, do the following:
+1) /usr/sbin/kolab_bootstrap -b (note the manager password)
+2) service kolab start
+3) point your browser to https://localhost/kolab/admin and login as
+   user "manager", with the password chosen in step 1.
+4) create/modify/delete users
+5) close all your browser windows, then return back to the web
+administration site, but log in as a regular user you just created, to test
+the forwarding and vacation functions, changing password, etc.
+6) point your mail client smtp and imap servers to localhost, and try to
+send yourself some mail, and read it.
+
+To test the calendaring functions, you'll need the kroupware client, or
+Microsoft Outlook with the Binary connector (proprietary).
 
 For a fresh install please initialize Kolab by running '%{_sbindir}/kolab_bootstrap -b'. as user root.
-An upgrade from the previous verson will not work as we skipped several releases.
-Do a kolab_bootstrap and then just re-add the users through the Web interface and then users should see their e-mails.
+If you upgraded from a previous version simply refresh Kolab by running run '%{_sbindir}/kolabconf' as user root.
 In every case execute '%{_initrddir}/kolab restart' as user root.
-The old e-mails should not be deleted.
 EOF
 
 
@@ -228,10 +254,14 @@ perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" ldaptransport.cf.template
 perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" ldapvirtual.cf.template
 # amavisd complains if its config file is owned by other than root
 perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:amavis|g" amavisd.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=clamav:clamav|g" clamd.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=clamav:clamav|g" freshclam.conf.template
 perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" cyrus.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" fbview.conf.template
 # apache needs to read this file
 perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:%{l_musr}|g" freebusy.conf.template
 perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" httpd.conf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" httpd.local.template
 perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" imapd.conf.template
 perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" imapd.group.template
 perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" ldapdistlist.cf.template
@@ -240,6 +270,8 @@ perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" ldapvirtual.cf.template
 perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" main.cf.template
 # master.cf has a password
 perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:postfix|g" master.cf.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" php.ini.template
+perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" proftpd.conf.template
 perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:root|g" rc.conf.template
 # postfix and apache need access to this file
 perl -pi -e "s|^OWNERSHIP.*|OWNERSHIP=root:%{l_musr}|g" resmgr.conf.template
@@ -257,8 +289,10 @@ perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0640|g" amavisd.conf.template
 # virtual has no password or any other secret that I can see, so let it be 0644
 perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0644|g" virtual.template
 perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0640|g" resmgr.conf.template
+perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0640|g" proftpd.conf.template
 perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0644|g" cyrus.conf.template
 perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0644|g" saslauthd.conf.template
+perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0644|g" fbview.conf.template
 perl -pi -e "s|^PERMISSIONS.*|PERMISSIONS=0640|g" freebusy.conf.template
 popd
 
