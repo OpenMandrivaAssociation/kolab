@@ -19,7 +19,7 @@ Summary:	Kolab Groupware Server
 Name:		kolab
 License:	GPL
 Version:	2.2.4
-Release:	%mkrel 1
+Release:	%mkrel 2
 Group:		System/Servers
 URL:		http://www.kolab.org
 Source0:	kolabd-%{version}.tar.gz
@@ -193,7 +193,6 @@ rm -rf %{buildroot}%{_datadir}/doc/kolab
 
 # fix crontab entry for kolabquotawarn
 cat > kolabquotawarn.cron << EOF
-#!/bin/sh
 */10 * * * * %{_datadir}/kolab/scripts/kolabquotawarn
 EOF
 install -m0755 kolabquotawarn.cron %{buildroot}%{_sysconfdir}/cron.d/kolabquotawarn
