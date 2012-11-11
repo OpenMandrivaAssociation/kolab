@@ -1,0 +1,33 @@
+--- templates/slapd.conf.template.in	2009-10-17 16:35:27.000000000 -0700
++++ templates/slapd.conf.template.in.thomas	2009-10-18 21:12:40.000000000 -0700
+@@ -31,7 +31,7 @@
+ # or dynamically build.  When build dynamically the module must be loaded.
+ # As the slapd that comes with the openpkg version of kolab is statically
+ # build it is not necessary to load the module.
+-# moduleload syncprov
++moduleload syncprov
+ @@@else@@@
+ replica-pidfile	@ldapserverslurpd_pidfile@
+ replogfile      @ldapserver_replogfile@
+@@ -88,10 +88,12 @@
+ #### Using overlays to improve data consistency
+ # Ensure that we never get dangling member attributes
+ # Checked on rename and delete
++moduleload refint
+ overlay refint
+ refint_attributes member
+ 
+ # The mail and the uid attribute must be unique.
++moduleload unique
+ overlay unique
+ unique_attributes mail uid
+ 
+@@ -218,7 +220,7 @@
+ 
+ include @ldapserver_confdir@/slapd.replicas
+ 
+-
++moduleload  back_monitor
+ database	monitor
+ 
+ access to *

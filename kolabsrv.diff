@@ -1,0 +1,21 @@
+--- dist_conf/kolabsrv.in	2009-03-27 08:28:31.000000000 -0700
++++ dist_conf/kolabsrv.in.thomas	2010-01-18 21:21:23.000000000 -0700
+@@ -54,6 +54,18 @@
+ 			freshclam) SERVICE="clamav-freshclam" ;;
+ 			*) SERVICE=$sname
+ 		esac
++	elif [ -e /etc/mandriva-release ]; then
++		case $sname in
++			apache2) SERVICE="httpd" ;;
++			openldap) SERVICE="@LDAPD@" ;;
++			sasl) SERVICE="saslauthd" ;;
++			imapd) SERVICE="cyrus-imapd" ;;
++			amavisd) SERVICE="amavisd" ;;
++			clamav) SERVICE="clamd" ;;
++			spamd) SERVICE="spamd" ;;
++			freshclam) SERVICE="freshclam" ;;
++			*) SERVICE=$sname
++		esac
+ 	fi
+ }	
+ 

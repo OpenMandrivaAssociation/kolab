@@ -1,0 +1,11 @@
+--- templates/amavisd.conf.template.in	2009-03-15 18:31:39.000000000 -0700
++++ templates/amavisd.conf.template.in.thomas	2009-03-22 10:30:58.000000000 -0700
+@@ -273,7 +273,7 @@
+ #
+ 
+ # true (e.g. 1) => syslog;  false (e.g. 0) => logging to file
+-$DO_SYSLOG = 0;                   # (defaults to false)
++$DO_SYSLOG = 1;                   # (defaults to false)
+ #$SYSLOG_LEVEL = 'user.info';     # (facility.priority, default 'mail.info')
+ 
+ # Log file (if not using syslog)

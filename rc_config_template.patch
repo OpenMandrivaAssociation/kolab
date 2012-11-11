@@ -1,0 +1,20 @@
+--- templates/rc.conf.template.in	2009-02-19 21:54:15.000000000 +0100
++++ templates/rc.conf.template.in.new	2009-02-19 21:54:08.000000000 +0100
+@@ -1,5 +1,5 @@
+ KOLAB_META_START
+-TARGET=@sysconfdir@/rc.conf
++TARGET=@sysconfdir@/kolab/rc.conf
+ PERMISSIONS=0644
+ OWNERSHIP=@kolab_musr@:@kolab_mgrp@
+ KOLAB_META_END
+@@ -16,3 +16,10 @@
+ 
+ spamassassin_enable="no"
+ clamav_update="hourly"
++
++@@@if postfix-enable-virus-scan@@@
++ENABLE_VIRUS_SCAN=yes
++@@@else@@@
++ENABLE_VIRUS_SCAN=no
++@@@endif@@@
++
