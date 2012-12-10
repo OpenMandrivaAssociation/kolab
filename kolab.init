@@ -1,0 +1,161 @@
+#!/bin/bash
+##
+##  rc.kolab
+##
+##  Copyright (c) 2002 Martin Konold <martin.konold(at)erfrakon.de>
+##  Copyright (c) 2002 Tassilo Erlewein <tassilo.erlewein(at)erfrakon.de>
+##  Adapted for Mandrake by Jean-Michel Dault <jmdault@mandrakesoft.com>
+##  Adapted for Mandriva by Oden Eriksson <oeriksson@mandriva.com>
+##  $Id: kolab.init 533607 2010-04-11 21:20:38Z tspuhler $
+##  $HeadURL: svn+ssh://svn.mandriva.com/svn/packages/cooker/kolab/current/SOURCES/kolab.init $
+# chkconfig: 345 95 05
+# description:  This starts the Kolab groupware server
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+# Source the kolab rc file
+. /etc/kolab/rc.conf
+
+RETVAL=0
+
+#This needs to be fixed, I temporarily disables it Thomas at btspuhler.com
+#check_config() {
+#    if [ ! -f /etc/kolab/.kolab2_configured ]; then
+#	echo "Kolab has not been configured yet!"
+#	echo "Please run /usr/sbin/kolab_boostrap -b then"
+#	echo "type 'service kolab start' to start the service."
+#	exit 1
+#    fi
+#}
+
+launch() {
+    /etc/rc.d/init.d/$1 stop >/dev/null
+    /etc/rc.d/init.d/$1 start
+}
+
+terminate() {
+    /etc/rc.d/init.d/$1 stop
+}
+
+start() {
+    if [ -f /var/lock/subsys/kolabd -o -f /var/run/kolab/kolab.pid ]; then
+	PID=`cat /var/run/kolab/kolab.pid | awk '{print $1}'`
+	KOLABS=`ps -p $PID 2>/dev/null | grep -c kolabd | awk '{print $1}'`
+	    if [ "$KOLABS" -gt 0 ]; then
+		echo "Warning: kolab is already running under pid ${PID}!"
+		exit 1
+	    fi
+    fi
+
+    mkdir -p /var/spool/postfix/extern/cyrus
+    chown cyrus:postfix /var/spool/postfix/extern/cyrus
+    chmod 750 /var/spool/postfix/extern/cyrus
+    perl -pi -e "s|^SASL_AUTHMECH=.*|SASL_AUTHMECH=\"${sasl_authmech}\"|g" /etc/sysconfig/saslauthd
+    #perl -pi -e "s|(.*space.*)slapd\.conf(.*)|\1slapd*conf\2|g;" /etc/rc.d/init.d/ldap
+
+    launch ldap
+    launch saslauthd
+    launch cyrus-imapd
+    launch httpd
+    launch postfix
+    launch clamd
+    launch freshclam
+    launch spamd
+    launch amavisd
+    if [ "${proftpd_enable}" = "yes" ]; then launch proftpd; fi
+
+    echo -n "Starting kolab backend (please wait): "
+    sleep 5
+    /usr/sbin/kolabd >& /dev/null &
+    RETVAL="$?"
+    [ "$RETVAL" -eq 0 ]  && success "start" || failure "start"
+    [ "$RETVAL" -eq 0 ] && touch /var/lock/subsys/kolabd
+    echo
+}
+
+stop() {
+    echo -n "Stopping kolab backend: "
+    killproc kolabd
+    RETVAL="$?"
+    echo
+    [ "$RETVAL" -eq 0 ] && rm -f /var/run/kolab/kolab.pid
+    [ "$RETVAL" -eq 0 ] && rm -f /var/lock/subsys/kolabd
+
+    terminate amavisd
+    terminate spamd
+    terminate freshclam
+    terminate clamd
+    terminate postfix
+    terminate httpd
+    terminate cyrus-imapd
+    terminate saslauthd
+    terminate ldap
+    if [ "${proftpd_enable}" = "yes" ]; then terminate proftpd; fi
+}
+
+reload() {
+    /etc/rc.d/init.d/ldap restart
+
+    echo "Restarting saslauthd (saslauth cannot reload)"
+    if [ -f /var/run/saslauthd.pid ]; then
+	kill -TERM `cat /var/run/saslauthd.pid` 2>/dev/null
+    fi
+    sleep 1
+    killall -9 saslauthd 2>/dev/null
+    /usr/sbin/saslauthd -a ${sasl_authmech} -n 5
+
+    #saslauth cannot reload
+    launch saslauthd
+
+    /etc/rc.d/init.d/cyrus-imapd reload
+    /etc/rc.d/init.d/amavisd reload
+    /etc/rc.d/init.d/clamd reload
+    /etc/rc.d/init.d/freshclam reload
+    /etc/rc.d/init.d/spamd reload
+    /etc/rc.d/init.d/postfix reload
+    /etc/rc.d/init.d/httpd reload
+
+    if [ "${proftpd_enable}" = "yes" ]; then 
+	echo "Reloading proftpd (if running) ..."
+	    if [ -f /var/run/proftpd.pid ]; then
+		kill -HUP `cat /var/run/proftpd.pid` 2>/dev/null
+	    fi 
+    fi
+
+    echo -n "Reloading kolab backend: "
+    if [ -f /var/run/kolab/kolab.pid ]; then
+	kill -HUP `cat /var/run/kolab/kolab.pid` 2>/dev/null
+    fi 
+}
+
+case $1 in
+  start)
+	#check_config
+	start
+	;;
+  stop)
+	stop
+	;;
+  restart)
+	stop
+	sleep 1
+	#check_config
+	start
+	;;
+  reload)
+	#check_config
+	reload
+	;;
+  condrestart)
+	[ -e /var/lock/subsys/kolabd ] && restart
+	;;
+  status)
+	status kolabd
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart|condrestart|reload|status}"
+	exit 1
+esac
+
+exit $RETVAL
