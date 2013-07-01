@@ -15,7 +15,7 @@
 %define l_ngrp %{l_mgrp}
 
 
-Summary:	Kolab Groupware Server
+Summary:	Groupware Server
 Name:		kolab
 License:	GPL
 Version:	2.2.4
