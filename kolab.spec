@@ -19,7 +19,7 @@ Summary:	Groupware Server
 Name:		kolab
 License:	GPL
 Version:	2.2.4
-Release:	%mkrel 4
+Release:	5
 Group:		System/Servers
 URL:		http://www.kolab.org
 Source0:	kolabd-%{version}.tar.gz
@@ -146,7 +146,6 @@ aclocal; automake --add-missing --copy; autoconf
 
 
 %install
-rm -rf %{buildroot}
 
 %makeinstall_std
 
@@ -323,10 +322,8 @@ if [ $1 = 0 ]; then
 fi
 
 %clean
-rm -rf %{buildroot}
 
 %files
-%defattr(-,root,root)
 %doc AUTHORS COPYING ChangeLog INSTALL NEWS README.urpmi
 %doc doc/README.amavisd doc/README.ldapdelete doc/README.outlook doc/README.sieve doc/README.webgui
 #%attr(0755,root,root) %{_initrddir}/kolab
