@@ -1,3 +1,5 @@
+%define debug_package %{nil}
+
 # the Management user/group name/id pair
 %define l_musr kolab
 %define l_mgrp kolab
