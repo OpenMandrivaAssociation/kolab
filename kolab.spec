@@ -21,7 +21,7 @@ Summary:	Groupware Server
 Name:		kolab
 License:	GPL
 Version:	2.2.4
-Release:	5
+Release:	6
 Group:		System/Servers
 URL:		http://www.kolab.org
 Source0:	kolabd-%{version}.tar.gz
