@@ -23,7 +23,7 @@ License:	GPL
 Version:	2.2.4
 Release:	6
 Group:		System/Servers
-URL:		http://www.kolab.org
+URL:		https://www.kolab.org
 Source0:	kolabd-%{version}.tar.gz
 Source1:	README
 Source2:	kolab.init
